@@ -11,7 +11,7 @@ services:
       <<: *default-build
       target: runner
     container_name: orion
-    # restart: always
+    restart: always
     command:
       - prefect
       - orion
@@ -23,13 +23,15 @@ services:
       PREFECT_ORION_DATABASE_CONNECTION_URL: postgresql+asyncpg://postgres:admin@pgdatabase:5432/ny_taxi
       PREFECT_ORION_ANALYTICS_ENABLED: "false"
       PREFECT_LOGGING_SERVER_LEVEL: WARNING
-      PREFECT_API_URL: http://172.17.0.1:4200/api
+      PREFECT_API_URL: http://localhost:4200/api
     volumes:
       - ${PWD}/flows:/flows
     depends_on:
       - pgdatabase
     networks:
       - pg-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   prefect-agent:
     build:
       <<: *default-build
@@ -44,13 +46,15 @@ services:
     depends_on:
       - orion
     environment:
-      PREFECT_API_URL: http://172.17.0.1:4200/api
+      PREFECT_API_URL: http://localhost:4200/api
       PREFECT_LOGGING_LEVEL: DEBUG
       DOCKER_HOST: unix://var/run/docker.sock
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - pg-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   pgdatabase:
     image: postgres:13
     container_name: pgdatabase
