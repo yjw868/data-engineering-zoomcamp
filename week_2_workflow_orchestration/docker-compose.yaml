@@ -1,0 +1,81 @@
+version: "3.9"
+
+x-build:
+  &default-build
+  context: .
+  dockerfile: Dockerfile
+
+services:
+  orion:
+    build:
+      <<: *default-build
+      target: runner
+    container_name: orion
+    # restart: always
+    command:
+      - prefect
+      - orion
+      - start
+    ports:
+      - 4200:4200
+    environment:
+      PREFECT_ORION_API_HOST: 0.0.0.0
+      PREFECT_ORION_DATABASE_CONNECTION_URL: postgresql+asyncpg://postgres:admin@pgdatabase:5432/ny_taxi
+      PREFECT_ORION_ANALYTICS_ENABLED: "false"
+      PREFECT_LOGGING_SERVER_LEVEL: WARNING
+      PREFECT_API_URL: http://172.17.0.1:4200/api
+    volumes:
+      - ${PWD}/flows:/flows
+    depends_on:
+      - pgdatabase
+    networks:
+      - pg-network
+  prefect-agent:
+    build:
+      <<: *default-build
+      target: runner
+    container_name: prefect-agent
+    command:
+      - prefect
+      - agent
+      - start
+      - -q
+      - default
+    depends_on:
+      - orion
+    environment:
+      PREFECT_API_URL: http://172.17.0.1:4200/api
+      PREFECT_LOGGING_LEVEL: DEBUG
+      DOCKER_HOST: unix://var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - pg-network
+  pgdatabase:
+    image: postgres:13
+    container_name: pgdatabase
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=ny_taxi
+    volumes:
+      - "./data/ny_taxi_postgres_data:/var/lib/postgresql/data:rm"
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "5433:5432"
+    networks:
+      - pg-network
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=root
+    ports:
+      - "8080:80"
+    networks:
+      - pg-network
+networks:
+  pg-network:
+    driver: bridge
+    name: pg-network
