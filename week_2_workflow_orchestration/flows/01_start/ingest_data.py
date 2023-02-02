@@ -17,7 +17,7 @@ def ingest_data(user, password, host, port, db, table_name, url):
     else:
         csv_name = '/output.csv'
 
-    # os.system(f"wget {url} -O {loc}/{csv_name}")
+    os.system(f"wget {url} -O {loc}/{csv_name}")
     postgres_url = f'postgresql://{user}:{password}@{host}:{port}/{db}'
     print(postgres_url)
     engine = create_engine(postgres_url)
@@ -57,7 +57,7 @@ def ingest_data(user, password, host, port, db, table_name, url):
 if __name__ == '__main__':
     user = "postgres"
     password = "admin"
-    host = "localhost"
+    host = "host.docker.internal"
     port = "5433"
     db = "ny_taxi"
     table_name = "yellow_taxi_trips"

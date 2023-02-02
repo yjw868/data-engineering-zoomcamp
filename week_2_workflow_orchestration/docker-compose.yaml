@@ -55,6 +55,25 @@ services:
       - pg-network
     extra_hosts:
       - "host.docker.internal:host-gateway"
+  ### Prefect CLI
+  cli:
+    build:
+      <<: *default-build
+      target: cli
+    container_name: cli
+    tty: true
+    entrypoint: "bash"
+    volumes:
+      - "./flows:/opt/prefect/flows"
+      - "./data:/opt/prefect/data"
+    environment:
+      - PREFECT_API_URL=http://localhost:4200/api
+    depends_on:
+      - pgdatabase
+    networks:
+      - pg-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   pgdatabase:
     image: postgres:13
     container_name: pgdatabase
@@ -74,7 +93,7 @@ services:
     container_name: pgadmin
     environment:
       - PGADMIN_DEFAULT_EMAIL=admin@admin.com
-      - PGADMIN_DEFAULT_PASSWORD=root
+      - PGADMIN_DEFAULT_PASSWORD=admin
     ports:
       - "8080:80"
     networks:
