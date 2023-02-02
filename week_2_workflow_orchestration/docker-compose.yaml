@@ -9,13 +9,11 @@ services:
   orion:
     build:
       <<: *default-build
-      target: runner
+      target: orion
     container_name: orion
     restart: always
-    command:
-      - prefect
-      - orion
-      - start
+    entrypoint: [ "prefect", "orion", "start", "--host", "0.0.0.0" ]
+    # entrypoint: [ "prefect", "orion", "start" ]
     ports:
       - 4200:4200
     environment:
@@ -25,17 +23,21 @@ services:
       PREFECT_LOGGING_SERVER_LEVEL: WARNING
       PREFECT_API_URL: http://localhost:4200/api
     volumes:
-      - ${PWD}/flows:/flows
+      # - ${PWD}/flows:/flow
+      - "./flows:/opt/prefect/flows"
+      - "./data:/opt/prefect/data"
     depends_on:
       - pgdatabase
     networks:
       - pg-network
+    network_mode: bridge
     extra_hosts:
       - "host.docker.internal:host-gateway"
   prefect-agent:
     build:
       <<: *default-build
-      target: runner
+      target: base
+    # image: prefecthq/prefect:2.7.7-python3.9
     container_name: prefect-agent
     command:
       - prefect
@@ -46,34 +48,36 @@ services:
     depends_on:
       - orion
     environment:
+      PREFECT_ORION_API_HOST: 0.0.0.0
       PREFECT_API_URL: http://localhost:4200/api
       PREFECT_LOGGING_LEVEL: DEBUG
-      DOCKER_HOST: unix://var/run/docker.sock
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - pg-network
     extra_hosts:
       - "host.docker.internal:host-gateway"
-  ### Prefect CLI
-  cli:
-    build:
-      <<: *default-build
-      target: cli
-    container_name: cli
-    tty: true
-    entrypoint: "bash"
-    volumes:
-      - "./flows:/opt/prefect/flows"
-      - "./data:/opt/prefect/data"
-    environment:
-      - PREFECT_API_URL=http://localhost:4200/api
-    depends_on:
-      - pgdatabase
-    networks:
-      - pg-network
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    ### Prefect CLI
+    # cli:
+    #   build:
+    #     <<: *default-build
+    #     target: cli
+    #   container_name: cli
+    #   tty: true
+    #   entrypoint: "bash"
+    #   volumes:
+    #     - "./flows:/opt/prefect/flows"
+    #     - "./data:/opt/prefect/data"
+    #   environment:
+    #     - PREFECT_API_URL=http://localhost:4200/api
+    #   depends_on:
+    #     - pgdatabase
+    #     - orion
+    #     - prefect-agent
+    #   networks:
+    #     - pg-network
+    #   extra_hosts:
+    #     - "host.docker.internal:host-gateway"
   pgdatabase:
     image: postgres:13
     container_name: pgdatabase
@@ -88,6 +92,8 @@ services:
       - "5433:5432"
     networks:
       - pg-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
@@ -96,8 +102,12 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=admin
     ports:
       - "8080:80"
+    volumes:
+      - "./data/pdadmin_data:/var/lib/postgresql/data:rm"
     networks:
       - pg-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 networks:
   pg-network:
     driver: bridge
