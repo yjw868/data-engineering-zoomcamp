@@ -55,7 +55,7 @@ def etl_gcs_to_bq(color: str, year: int, month: int):
 
 @flow()
 def etl_parent_flow(
-    colors: list[str] = ["yellow"],  years: list[int] = 2021, months: list[int] = [1, 2]
+    colors: list[str] = ["yellow"],  years: list[int] = [2021], months: list[int] = [1, 2]
 ):
     for color in colors:
         for year in years:
