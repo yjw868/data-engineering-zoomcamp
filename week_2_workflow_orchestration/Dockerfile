@@ -1,6 +1,6 @@
 FROM prefecthq/prefect:2.7.7-python3.9 as base
 
-FROM base as orion
+FROM base as agent
 
 COPY requirements.txt .
 

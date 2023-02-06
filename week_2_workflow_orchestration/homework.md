@@ -16,6 +16,7 @@ How many rows does that dataset have?
 * 299,234
 * 822,132
 
+**Answer**:  447,770
 
 ## Question 2. Scheduling with Cron
 
@@ -28,6 +29,7 @@ Using the flow in `etl_web_to_gcs.py`, create a deployment to run on the first o
 - `5 * 1 0 *`
 - `* * 5 1 0`
 
+**Answer**: `0 5 1 * *`
 
 ## Question 3. Loading data to BigQuery 
 
@@ -48,7 +50,7 @@ Make sure you have the parquet data files for Yellow taxi data for Feb. 2019 and
 - 27,235,753
 - 11,338,483
 
-
+**Answer**: 14,851,920
 
 ## Question 4. Github Storage Block
 

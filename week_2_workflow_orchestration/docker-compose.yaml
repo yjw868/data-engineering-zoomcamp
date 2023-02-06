@@ -9,7 +9,7 @@ services:
   orion:
     build:
       <<: *default-build
-      target: orion
+      target: base
     container_name: orion
     restart: always
     entrypoint: [ "prefect", "orion", "start", "--host", "0.0.0.0" ]
@@ -22,10 +22,10 @@ services:
       PREFECT_ORION_ANALYTICS_ENABLED: "false"
       PREFECT_LOGGING_SERVER_LEVEL: WARNING
       PREFECT_API_URL: http://localhost:4200/api
-    volumes:
-      # - ${PWD}/flows:/flow
-      - "./flows:/opt/prefect/flows"
-      - "./data:/opt/prefect/data"
+    # volumes:
+    #   # - "${PWD}:/opt/prefect"
+    #   - "./flows:/opt/prefect/flows"
+    #   - "./data:/opt/prefect/data"
     depends_on:
       - pgdatabase
     networks:
@@ -36,7 +36,7 @@ services:
   prefect-agent:
     build:
       <<: *default-build
-      target: base
+      target: agent
     # image: prefecthq/prefect:2.7.7-python3.9
     container_name: prefect-agent
     command:
@@ -49,9 +49,13 @@ services:
       - orion
     environment:
       PREFECT_ORION_API_HOST: 0.0.0.0
-      PREFECT_API_URL: http://localhost:4200/api
+      PREFECT_API_URL: http://host.docker.internal:4200/api
       PREFECT_LOGGING_LEVEL: DEBUG
     volumes:
+      # - "${PWD}:/opt/prefect"
+      - "./flows:/opt/prefect/flows"
+      - "./data:/opt/prefect/data"
+      - "./deployments:/opt/prefect/deployments"
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - pg-network
