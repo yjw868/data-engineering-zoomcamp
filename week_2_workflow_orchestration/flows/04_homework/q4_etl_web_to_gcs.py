@@ -5,7 +5,7 @@ import pandas as pd
 from prefect import flow, task
 from prefect_gcp.cloud_storage import GcsBucket
 
-loc =  "Opt/prefect/data"
+loc =  "/opt/prefect/data"
 
 @task(retries=3)
 def fetch(dataset_url: str) -> pd.DataFrame:
