@@ -47,7 +47,7 @@ def write_local(df: pd.DataFrame, color: str, dataset_file: str) -> Path:
 def write_gcs(path: Path) -> None:
     """Upload local parquet file to GCS"""
     gcs_block = GcsBucket.load("zoom-gcs")
-    gcs_block.upload_from_path(from_path=path, to_path=Path(*path.parts[2:]))
+    gcs_block.upload_from_path(from_path=path, to_path=Path(*path.parts[3:]))
     return
 
 
