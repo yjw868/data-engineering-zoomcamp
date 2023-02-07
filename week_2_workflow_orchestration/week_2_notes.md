@@ -9,3 +9,5 @@
 - prefect deployment apply ./deployments/q1_etl_parent_flow-deployment.yaml
 
 - prefect deployment build flows/04_homework/q3_etl_gcs_to_bq.py:etl_parent_flow -n "ETL Q3" -o deployments/q3_etl_gcs_to_bq.py.yaml --apply 
+
+- prefect deployment build flows/04_homework/q3_etl_gcs_to_bq.py:etl_parent_flow -n "ETL Q4" -o deployments/q4_etl_gcs_to_bq.py.yaml -sb github/zoom-github --apply 

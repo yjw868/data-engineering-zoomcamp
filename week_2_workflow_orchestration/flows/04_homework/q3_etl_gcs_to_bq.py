@@ -10,13 +10,11 @@ from prefect_gcp.cloud_storage import GcsBucket
 @task(retries=3)
 def extract_from_gcs(color: str, year: int, month: int) -> Path:
     """Download trip data from GCS"""
-    os.makedirs(f"data/{color}")
-    file_name = f'{color}_tripdata_{year}-{month:02}.parquet' 
-    path =f"./data/{color}/{file_name}" 
+    path =f"data/{color}/{color}_tripdata_{year}-{month:02}.parquet" 
     gcs_path = f"opt/prefect/{path}"
     gcs_block = GcsBucket.load("zoom-gcs")
-    gcs_block.get_directory(from_path=gcs_path, local_path=f"opt/prefect/data/")
-    return Path(path).absolute()
+    gcs_block.get_directory(from_path=gcs_path, local_path=f"./data/")
+    return Path(path)
 
 
 @task()
