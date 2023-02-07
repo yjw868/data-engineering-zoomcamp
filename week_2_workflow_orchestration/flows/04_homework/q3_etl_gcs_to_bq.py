@@ -13,9 +13,8 @@ def extract_from_gcs(color: str, year: int, month: int) -> Path:
     path =f"./data/{color}/{file_name}" 
     gcs_path = f"opt/prefect/{path}"
     gcs_block = GcsBucket.load("zoom-gcs")
-    gcs_block.get_directory(from_path=gcs_path, local_path=f"./data/")
-    print(list(Path.cwd().iterdir()))
-    return Path(file_name).absolute()
+    gcs_block.get_directory(from_path=gcs_path, local_path=f"opt/prefect/data/")
+    return Path(path).absolute()
 
 
 @task()
