@@ -9,11 +9,12 @@ from prefect_gcp.cloud_storage import GcsBucket
 @task(retries=3)
 def extract_from_gcs(color: str, year: int, month: int) -> Path:
     """Download trip data from GCS"""
-    path =f"data/{color}/{color}_tripdata_{year}-{month:02}.parquet" 
+    path =f"./data/{color}/{color}_tripdata_{year}-{month:02}.parquet" 
     gcs_path = f"opt/prefect/{path}"
     gcs_block = GcsBucket.load("zoom-gcs")
     gcs_block.get_directory(from_path=gcs_path, local_path=f"./data/")
-    return Path(path)
+    
+    return Path(path).absolute()
 
 
 @task()
@@ -57,11 +58,11 @@ def etl_gcs_to_bq(color: str, year: int, month: int):
 def etl_parent_flow(
     colors: list[str] = ["yellow"],  years: list[int] = [2021], months: list[int] = [1, 2]
 ):
-    print(Path.cwd())
-    # for color in colors:
-    #     for year in years:
-    #         for month in months:
-    #             etl_gcs_to_bq(color, year, month)
+    print(f'current location is {Path.cwd()}')
+    for color in colors:
+        for year in years:
+            for month in months:
+                etl_gcs_to_bq(color, year, month)
 
 
 if __name__ == "__main__":
