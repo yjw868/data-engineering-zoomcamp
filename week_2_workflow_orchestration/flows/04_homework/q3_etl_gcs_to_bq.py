@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import pandas as pd
@@ -9,6 +10,7 @@ from prefect_gcp.cloud_storage import GcsBucket
 @task(retries=3)
 def extract_from_gcs(color: str, year: int, month: int) -> Path:
     """Download trip data from GCS"""
+    os.makedirs(f"data/{color}")
     file_name = f'{color}_tripdata_{year}-{month:02}.parquet' 
     path =f"./data/{color}/{file_name}" 
     gcs_path = f"opt/prefect/{path}"
