@@ -13,7 +13,7 @@ def extract_from_gcs(color: str, year: int, month: int) -> Path:
     path =f"data/{color}/{color}_tripdata_{year}-{month:02}.parquet" 
     gcs_path = f"opt/prefect/{path}"
     gcs_block = GcsBucket.load("zoom-gcs")
-    gcs_block.get_directory(from_path=gcs_path, local_path=f"./data/")
+    gcs_block.get_directory(from_path=gcs_path, local_path=gcs_path)
     return Path(gcs_path)
 
 
