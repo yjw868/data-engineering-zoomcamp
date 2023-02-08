@@ -4,7 +4,11 @@
 
 The goal of this homework is to familiarise users with workflow orchestration and observation. 
 
-
+```
+    cd week_2_workflow_orchestration
+    docker compose up -d
+    # open terminal in prefect-agent docker
+```
 ## Question 1. Load January 2020 data
 
 Using the `etl_web_to_gcs.py` flow that loads taxi data into GCS as a guide, create a flow that loads the green taxi CSV dataset for January 2020 into GCS and run it. Look at the logs to find out how many rows the dataset has.
@@ -16,6 +20,7 @@ How many rows does that dataset have?
 * 299,234
 * 822,132
 
+`python flow/04_homework/q1_etl_web_to_gcs.py`
 **Answer**:  447,770
 
 ## Question 2. Scheduling with Cron
@@ -50,7 +55,8 @@ Make sure you have the parquet data files for Yellow taxi data for Feb. 2019 and
 - 27,235,753
 - 11,338,483
 
-**Answer**: 14,851,920
+`python flow/04_homework/q1_etl_web_to_gcs.py`
+**Answer**: `14,851,920`
 
 ## Question 4. Github Storage Block
 
@@ -67,7 +73,15 @@ How many rows were processed by the script?
 - 88,605
 - 190,225
 
+`python flow/04_homework/q1_etl_web_to_gcs.py`
 
+
+Quick run deployment from UI
+
+`etl-parent-flow/q4-zoom-github`
+
+
+**Answer**: `88,019`
 
 ## Question 5. Email or Slack notifications
 
@@ -97,7 +111,8 @@ How many rows were processed by the script?
 - `728,390`
 - `514,392`
 
-
+Use the UI to change Q4 deployment parameter the trigger a quick run
+**Answer**: `514,392`
 ## Question 6. Secrets
 
 Prefect Secret blocks provide secure, encrypted storage in the database and obfuscation in the UI. Create a secret block in the UI that stores a fake 10-digit password to connect to a third-party service. Once you’ve created your block in the UI, how many characters are shown as asterisks (*) on the next page of the UI?
@@ -107,7 +122,7 @@ Prefect Secret blocks provide secure, encrypted storage in the database and obfu
 - 8
 - 10
 
-
+**Answer**: `8`
 ## Submitting the solutions
 
 * Form for submitting: https://forms.gle/PY8mBEGXJ1RvmTM97
