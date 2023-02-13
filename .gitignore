@@ -193,6 +193,7 @@ poetry.toml
 
 week_1_basics_n_setup/2_docker_sql/ny_taxi_postgres_data/
 week_1_basics_n_setup/2_docker_sql/data/
+*/data/
 
 *.csv
 *.csv.gz
