@@ -1,0 +1,94 @@
+version: "3.9"
+
+x-build:
+  &default-build
+  context: .
+  dockerfile: Dockerfile
+
+x-app-vars:
+  &default-app-vars
+  PREFECT_ORION_API_HOST: 0.0.0.0
+  PREFECT_ORION_DATABASE_CONNECTION_URL: postgresql+asyncpg://postgres:admin@pgdatabase:5432/ny_taxi
+  PREFECT_ORION_ANALYTICS_ENABLED: "false"
+  PREFECT_LOGGING_SERVER_LEVEL: DEBUG
+  PREFECT_LOCAL_STORAGE_PATH: "/tmp/prefect/storage"
+services:
+  orion:
+    build:
+      <<: *default-build
+      target: base
+    container_name: orion
+    restart: on-failure
+    entrypoint: [ "prefect", "orion", "start", "--host", "0.0.0.0" ]
+    ports:
+      - 4200:4200
+    environment:
+      <<: *default-app-vars
+      PREFECT_API_URL: http://localhost:4200/api
+    depends_on:
+      - pgdatabase
+    networks:
+      - prefect-network
+    network_mode: bridge
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  prefect-agent:
+    build:
+      <<: *default-build
+      target: agent
+    container_name: prefect-agent
+    command:
+      - prefect
+      - agent
+      - start
+      - -q
+      - default
+    depends_on:
+      - orion
+    environment:
+      <<: *default-app-vars
+      PREFECT_API_URL: http://host.docker.internal:4200/api
+    volumes:
+      - "./flows:/opt/prefect/flows"
+      - "./data:/opt/prefect/data"
+      - "./deployments:/opt/prefect/deployments"
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - prefect-network
+    network_mode: bridge
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  pgdatabase:
+    image: postgres:13
+    container_name: pgdatabase
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=ny_taxi
+    volumes:
+      - "./data/ny_taxi_postgres_data:/var/lib/postgresql/data:rm"
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "5433:5432"
+    networks:
+      - prefect-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  pgadmin:
+    image: dpage/pgadmin4:6.20
+    container_name: pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    ports:
+      - "8080:80"
+    volumes:
+      - "./data/pdadmin_data:/var/lib/pgadmin"
+    networks:
+      - prefect-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+networks:
+  prefect-network:
+    driver: bridge
+    name: prefect-network
