@@ -21,16 +21,17 @@ def fetch(dataset_url: str) -> pd.DataFrame:
 @task(log_prints=True)
 def clean(df: pd.DataFrame) -> pd.DataFrame:
     """Fix dtype issues"""
-    df["pickup_datetime"] = pd.to_datetime(df["pickup_datetime"])
-    df["dropOff_datetime"] = pd.to_datetime(df["dropOff_datetime"])
+    df["tpep_pickup_datetime"] = pd.to_datetime(df["tpep_pickup_datetime"])
+    df["tpep_dropoff_datetime"] = pd.to_datetime(df["tpep_dropoff_datetime"])
     print(df.head(2))
     print(f"columns: {df.dtypes}")
     print(f"rows: {len(df)}")
-    return df.astype({
-        'PUlocationID': 'Int64',
-        'DOlocationID': 'Int64',
-        'SR_Flag': 'Int64'
-    })
+    # return df.astype({
+    #     'PUlocationID': 'Int64',
+    #     'DOlocationID': 'Int64',
+    #     'SR_Flag': 'Int64'
+    # })
+    return df
 
 
 @task(log_prints=True)
@@ -56,11 +57,11 @@ def write_gcs(path: Path) -> None:
 
 
 @flow()
-def etl_web_to_gcs(retries=6) -> None:
+def etl_web_to_gcs(retries=18) -> None:
     """The main ETL function"""
-    color = "green"
+    color = "yellow"
     year = 2019
-    months = range(1, 13)
+    months = range(10, 13)
     
     for month in months:
         dataset_file = f"{color}_tripdata_{year}-{month:02}"
@@ -69,7 +70,7 @@ def etl_web_to_gcs(retries=6) -> None:
         df = fetch(dataset_url)
         df_clean = clean(df)
         path = write_local(df_clean, color, dataset_file)
-        write_gcs(path)
+        # write_gcs(path)
 
 
 if __name__ == "__main__":
