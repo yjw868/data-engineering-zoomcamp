@@ -1,0 +1,14 @@
+version: '3'
+services:
+  dbt-bq-dtc:
+    build:
+      context: ./search
+      target: dbt-bigquery
+    image: dbt/bigquery
+    working_dir: /usr/app/dbt/taxi_rides_ny
+    tty: true
+    volumes:
+      - ./dbt-bq-dtc:/usr/app/dbt
+      - ./profile-yml/:/root/.dbt
+      - ~/.config/gcloud/pacific-card-374422-5e253ea4302a.json:/.google/credentials/google_credentials.json
+    network_mode: host
