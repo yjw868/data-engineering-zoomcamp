@@ -2,13 +2,59 @@ version: '3'
 services:
   dbt-bq-dtc:
     build:
-      context: ./search
+      context: .
       target: dbt-bigquery
     image: dbt/bigquery
+    container_name: dbt-bq-dtc
     working_dir: /usr/app/dbt/taxi_rides_ny
+    ports:
+      - "8081:8080"
     tty: true
     volumes:
       - ./dbt-bq-dtc:/usr/app/dbt
       - ./profile-yml/:/root/.dbt
       - ~/.config/gcloud/pacific-card-374422-5e253ea4302a.json:/.google/credentials/google_credentials.json
-    network_mode: host
+    networks:
+      - dbt-network
+  pgdatabase_w4:
+    image: postgres:13
+    container_name: pgdatabase_w4
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=db
+    volumes:
+      - "./data/db:/var/lib/postgresql/data:rm"
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "5433:5432"
+    networks:
+      - dbt-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  dataviz:
+    image: metabase/metabase
+    container_name: metabase
+    restart: always
+    environment:
+      - MB_DB_TYPE=postgres
+      - MB_DB_DBNAME=db
+      - MB_DB_PORT=5432
+      - MB_DB_USER=postgres
+      - MB_DB_PASS=admin
+      - MB_DB_HOST=pgdatabase_w4
+      - MB_DB_FILE=/metabase-data/metabase.db
+    depends_on:
+      - pgdatabase_w4
+    volumes:
+      - "./data/dataviz_data:/metabase-data"
+    ports:
+      - "3000:3000"
+    networks:
+      - dbt-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+networks:
+  dbt-network:
+    driver: bridge
+    name: dbt-network

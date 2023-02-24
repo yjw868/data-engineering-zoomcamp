@@ -77,7 +77,7 @@ def write_gcs(path: Path) -> None:
 def etl_web_to_gcs(retries=18) -> None:
     """The main ETL function"""
     color = "green"
-    year = 2019
+    year = 2020
     months = range(1, 13)
     
     for month in months:

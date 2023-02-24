@@ -15,6 +15,7 @@ sources:
       tables:
         - name: green_tripdata
         - name: yellow_tripdata
+        - name: fhv_tripdata
          # freshness:
            # error_after: {count: 6, period: hour}
 
@@ -201,3 +202,31 @@ models:
             description: Total amount of all tolls paid in trip.
           - name: Total_amount 
             description: The total amount charged to passengers. Does not include cash tips.
+    - name: stg_fhv_tripdata
+      description: >
+          This data dictionary describes High Volume FHV trip data. Each row represents a single trip in an FHV
+          dispatched by one of NYC's licensed High Volume FHV bases. On August 14, 2018, Mayor de Blasio
+          signed Local Law 149 of 2018, creating a new license category for TLC-licensed FHV businesses that
+          currently dispatch or plan to dispatch more than 10,000 FHV trips in New York City per day under a
+          single brand, trade, or operating name, referred to as High-Volume For-Hire Services (HVFHS). This law
+          went into effect on Feb 1, 2019.
+      columns:
+          - name: dispatching_base_num
+            description: The TLC Base License Number of the base that dispatched the trip
+            tests:
+                - unique:
+                    severity: warn
+                - not_null:
+                    severity: warn
+          - name: pickup_datetime 
+            description: The date and time when the meter was engaged.
+          - name: dropOff_datetime 
+            description: The date and time when the meter was disengaged.
+          - name: PUlocationID
+            description: TLC Taxi Zone in which the trip began
+          - name: DOlocationID
+            description: TLC Taxi Zone in which the trip ended
+          - name: SR_Flag
+            description: Did the passenger agree to a shared/pooled ride, regardless of whether they were matched? (Y/N)
+          - name: Affiliated_base_number 
+            description: The elapsed trip distance in miles reported by the taximeter.

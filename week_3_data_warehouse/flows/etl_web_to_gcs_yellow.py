@@ -14,7 +14,7 @@ def fetch(dataset_url: str) -> pd.DataFrame:
     # if randint(0, 1) > 0:
     #     raise Exception
 
-    df = pd.read_csv(dataset_url)
+    df = pd.read_csv(dataset_url, low_memory=False)
     return df
 
 
@@ -75,8 +75,8 @@ def write_gcs(path: Path) -> None:
 def etl_web_to_gcs(retries=18) -> None:
     """The main ETL function"""
     color = "yellow"
-    year = 2019
-    months = range(1, 13)
+    year = 2020
+    months = range(4, 13)
     
     for month in months:
         dataset_file = f"{color}_tripdata_{year}-{month:02}"
