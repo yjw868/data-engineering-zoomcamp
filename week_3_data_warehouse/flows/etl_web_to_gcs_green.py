@@ -21,16 +21,34 @@ def fetch(dataset_url: str) -> pd.DataFrame:
 @task(log_prints=True)
 def clean(df: pd.DataFrame) -> pd.DataFrame:
     """Fix dtype issues"""
-    df["pickup_datetime"] = pd.to_datetime(df["pickup_datetime"])
-    df["dropOff_datetime"] = pd.to_datetime(df["dropOff_datetime"])
+    # df["lpep_pickup_datetime"] = pd.to_datetime(df["lpep_pickup_datetime"])
+    # df["lpep_dropoff_datetime"] = pd.to_datetime(df["lpep_dropoff_datetime"])
     print(df.head(2))
     print(f"columns: {df.dtypes}")
     print(f"rows: {len(df)}")
     return df.astype({
-        'PUlocationID': 'Int64',
-        'DOlocationID': 'Int64',
-        'SR_Flag': 'Int64'
+       'VendorID': 	'Int64',
+        'lpep_pickup_datetime': 	'datetime64[ns]',
+        'lpep_dropoff_datetime': 	'datetime64[ns]',
+        'passenger_count': 	'Int64',
+        'trip_distance': 	'float64',
+        'PULocationID': 	'Int64',
+        'DOLocationID': 	'Int64',
+        'RatecodeID': 	'Int64',
+        'store_and_fwd_flag': 	'string',
+        'payment_type': 	'Int64',
+        'fare_amount': 	'float64',
+        'extra': 	'float64',
+        'mta_tax': 	'float64',
+        'improvement_surcharge': 	'float64',
+        'tip_amount': 	'float64',
+        'tolls_amount': 	'float64',
+        'total_amount': 	'float64',
+        'congestion_surcharge': 	'float64',
+        'ehail_fee': 	'float64',
+        'trip_type': 	'Int64'
     })
+    # return df
 
 
 @task(log_prints=True)
@@ -56,10 +74,10 @@ def write_gcs(path: Path) -> None:
 
 
 @flow()
-def etl_web_to_gcs(retries=6) -> None:
+def etl_web_to_gcs(retries=18) -> None:
     """The main ETL function"""
     color = "green"
-    year = 2019
+    year = 2020
     months = range(1, 13)
     
     for month in months:
