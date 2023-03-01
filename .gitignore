@@ -197,3 +197,8 @@ week_1_basics_n_setup/2_docker_sql/data/
 
 *.csv
 *.csv.gz
+
+# Include metabase data
+!/Users/ywang/Documents/Training/data-engineering-zoomcamp/week_4_analytics_engineering/data/dataviz_data
+
+week_5_batch_processing/spark-apps/zones/*

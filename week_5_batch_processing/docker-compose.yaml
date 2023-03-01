@@ -1,0 +1,95 @@
+# https://cloudinfrastructureservices.co.uk/create-apache-spark-docker-container-using-docker-compose/
+version: "3"
+services:
+  spark-master:
+    # image: docker.io/bitnami/spark:3.3
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: spark-master
+    hostname: spark-master
+    user: spark:spark
+    ports:
+      - "9090:8080"
+      - "7077:7077"
+      - "4041:4040"
+      - "8888:8888"
+    volumes:
+       - ./spark-apps:/opt/spark-apps
+       - ./data:/opt/data
+       - ./spark-data:/opt/spark-data
+       - ./data/spark-defaults.conf:/opt/bitnami/spark/conf/spark-defaults.conf
+    environment:
+      - SPARK_MODE=master
+      - SPARK_LOCAL_IP=spark-master
+      - SPARK_WORKLOAD=master
+      # - SPARK_MASTER_PORT=7077
+      # - SPARK_MASTER_WEBUI_PORT=8080
+    networks:
+      - spark-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  # spark-worker-a:
+  #   # image: docker.io/bitnami/spark:3.3
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: spark-worker-a
+  #   user: root
+  #   ports:
+  #     - "9091:8080"
+  #     - "7000:7000"
+  #     - "4040:4040"
+  #   depends_on:
+  #     - spark-master
+  #   environment:
+  #     - SPARK_WORKLOAD=worker
+  #     # - SPARK_MASTER_HOST=spark-master
+  #     - SPARK_MASTER_URL=spark://host.docker.internal:7077
+  #     # - SPARK_BLOCKMANAGER_PORT=spark-master
+  #     # - SPARK_WORKER_CORES=1
+  #     # - SPARK_WORKER_MEMORY=1G
+  #     # - SPARK_DRIVER_MEMORY=1G
+  #     # - SPARK_EXECUTOR_MEMORY=1G
+  #     - SPARK_LOCAL_IP=spark-worker-a
+  #   volumes:
+  #      - ./apps:/opt/spark-dir
+  #      - ./data:/opt/spark-data
+  #      - ./data/spark-defaults.conf:/opt/bitnami/spark/conf/spark-defaults.conf
+  #   networks:
+  #     - spark-network
+  #   extra_hosts:
+  #     - "host.docker.internal:host-gateway"
+  # spark-worker-b:
+  #   image: docker.io/bitnami/spark:3.3
+  #   ports:
+  #     - "9092:8080"
+  #     - "7001:7000"
+  #   depends_on:
+  #     - spark-master
+  #   environment:
+  #     - SPARK_MASTER=spark://spark-master:7077
+  #     - SPARK_WORKER_CORES=1
+  #     - SPARK_WORKER_MEMORY=1G
+  #     - SPARK_DRIVER_MEMORY=1G
+  #     - SPARK_EXECUTOR_MEMORY=1G
+  #     - SPARK_WORKLOAD=worker
+  #     - SPARK_LOCAL_IP=spark-worker-b
+  #   volumes:
+  #       - ./apps:/opt/spark-dir
+  #       - ./data:/opt/spark-data
+  # demo-database:
+  #   image: postgres:11.7-alpine
+  #   container_name: db
+  #   ports:
+  #     - "5433:5432"
+  #   environment:
+  #     - POSTGRES_PASSWORD=securepassword
+  #   networks:
+  #     - spark-network
+  #   extra_hosts:
+  #     - "host.docker.internal:host-gateway"
+networks:
+  spark-network:
+    driver: bridge
+    name: spark-network
