@@ -35,7 +35,7 @@ services:
   #     context: .
   #     dockerfile: Dockerfile
   #   container_name: spark-worker-a
-  #   user: root
+  #   # user: spark:spark
   #   ports:
   #     - "9091:8080"
   #     - "7000:7000"
@@ -44,8 +44,8 @@ services:
   #     - spark-master
   #   environment:
   #     - SPARK_WORKLOAD=worker
-  #     # - SPARK_MASTER_HOST=spark-master
-  #     - SPARK_MASTER_URL=spark://host.docker.internal:7077
+  #     - SPARK_MASTER_HOST=spark-master
+  #     - SPARK_MASTER_URL=spark://spark-master:7077
   #     # - SPARK_BLOCKMANAGER_PORT=spark-master
   #     # - SPARK_WORKER_CORES=1
   #     # - SPARK_WORKER_MEMORY=1G
@@ -53,8 +53,9 @@ services:
   #     # - SPARK_EXECUTOR_MEMORY=1G
   #     - SPARK_LOCAL_IP=spark-worker-a
   #   volumes:
-  #      - ./apps:/opt/spark-dir
-  #      - ./data:/opt/spark-data
+  #      - ./spark-apps:/opt/spark-apps
+  #      - ./data:/opt/data
+  #      - ./spark-data:/opt/spark-data
   #      - ./data/spark-defaults.conf:/opt/bitnami/spark/conf/spark-defaults.conf
   #   networks:
   #     - spark-network
