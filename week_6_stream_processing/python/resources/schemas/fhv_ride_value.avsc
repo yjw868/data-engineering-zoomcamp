@@ -1,0 +1,38 @@
+{
+  "namespace": "com.datatalksclub.taxi",
+  "type": "record",
+  "name": "FhvRideRecord",
+  "fields": [
+    {
+      "name": "dispatching_base_num",
+      "type": "string"
+    },
+    {
+      "name": "pickup_datetime",
+        "type": {"type": "long", "logicalType": "timestamp-millis"}
+    },
+    {
+      "name": "drop_off_datetime",
+      "type": {"type": "long", "logicalType": "timestamp-millis"},
+      "default" : 0 
+    },
+    {
+      "name": "pickup_location_id",
+      "type": "string",
+      "default" : ""
+    },
+    {
+      "name": "drop_off_location_id",
+      "type": "string",
+      "default" : ""
+    },
+    {
+      "name": "sr_flag",
+      "type": "string"
+    },
+    {
+      "name": "affiliated_base_number",
+      "type": "string"
+    }
+  ]
+}
