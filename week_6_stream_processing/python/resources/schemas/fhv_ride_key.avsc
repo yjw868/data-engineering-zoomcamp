@@ -1,0 +1,11 @@
+{
+  "namespace": "com.datatalksclub.taxi",
+  "type": "record",
+  "name": "FhvRecordKey",
+  "fields": [
+    {
+      "name": "affiliated_base_number",
+      "type": "string"
+    }
+  ]
+}
